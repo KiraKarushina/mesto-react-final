@@ -11,12 +11,11 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ProtectedRoute from "./ProtectedRoute";
-import {Routes, Route, BrowserRouter, useNavigate } from "react-router-dom"
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import InfoTooltip from "./InfoTooltip";
 import Register from "./Register";
 import Login from "./Login";
 import auth from "../utils/Auth";
-
 
 function App() {
   //
@@ -38,7 +37,6 @@ function App() {
 
   // Login state
   const [loggedIn, setLoggedIn] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -73,59 +71,54 @@ function App() {
 
   function handleSingOut() {
     setLoggedIn(false);
-    localStorage.removeItem('jwt');
-    navigate('/sign-in', {replace: true});
+    localStorage.removeItem("jwt");
+    navigate("/sign-in", { replace: true });
   }
 
   function handleRegistration(data) {
-    auth.register(data)
-        .then(
-            (data) => {
-              setSuccessSignUp(true);
-              handleInfoTooltipPopupOpen();
-              navigate('/sign-in', {replace: true})
-            },
-            (err) => {
-              setSuccessSignUp(false);
-              handleInfoTooltipPopupOpen();
-              console.log(err);
-            })
+    auth.register(data).then(
+      (data) => {
+        setSuccessSignUp(true);
+        handleInfoTooltipPopupOpen();
+        navigate("/sign-in", { replace: true });
+      },
+      (err) => {
+        setSuccessSignUp(false);
+        handleInfoTooltipPopupOpen();
+        console.log(err);
+      }
+    );
   }
 
   function handleAuthorization(data) {
-    auth.authorize(data)
-        .then(
-            (data) => {
-              setLoggedIn(true);
-              localStorage.setItem('jwt', data.token);
-              navigate('/', {replace: true});
-              handleCheckToken();
-            },
-            (err) => {
-                setSuccessSignUp(false);
-                handleInfoTooltipPopupOpen();
-              console.log(err);
-            }
-        )
+    auth.authorize(data).then(
+      (data) => {
+        setLoggedIn(true);
+        localStorage.setItem("jwt", data.token);
+        navigate("/", { replace: true });
+        handleCheckToken();
+      },
+      (err) => {
+        setSuccessSignUp(false);
+        handleInfoTooltipPopupOpen();
+        console.log(err);
+      }
+    );
   }
 
   const handleCheckToken = () => {
-        const token = localStorage.getItem('jwt');
-        auth.checkToken(token)
-            .then(
-                (data) => {
-                  setUserEmail(data.data.email);
-                  setLoggedIn(true);
-                  navigate('/', {replace: true});
-                },
-                (err) => {
-                  console.log(err);
-                }
-            )
-
+    const token = localStorage.getItem("jwt");
+    auth.checkToken(token).then(
+      (data) => {
+        setUserEmail(data.data.email);
+        setLoggedIn(true);
+        navigate("/", { replace: true });
+      },
+      (err) => {
+        console.log(err);
       }
-
-
+    );
+  };
 
   function handleAddPlaceSubmit(card) {
     api
@@ -221,27 +214,37 @@ function App() {
       <div className="body">
         <div className="page">
           <Header
-              loggedIn={loggedIn}
-              onSingOut={handleSingOut}
-              userEmail={userEmail}
+            loggedIn={loggedIn}
+            onSingOut={handleSingOut}
+            userEmail={userEmail}
           />
           <Routes>
-            <Route path="/sign-up" element={<Register onRegistration={handleRegistration}/>}/>
-            <Route path="/sign-in" element={ <Login onAuthorization={handleAuthorization}/>}/>
             <Route
-                path={'/'}
-                element={<ProtectedRoute
-                    element={Main}
-                    cards={cards}
-                    onEditAvatar={handleEditAvatarClick}
-                    onEditProfile={handleEditProfileClick}
-                    onAddPlace={handleAddPlaceClick}
-                    onCardClick={handleCardClick}
-                    onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete}
-                    loggedIn={loggedIn}/>} />
+              path="/sign-up"
+              element={<Register onRegistration={handleRegistration} />}
+            />
+            <Route
+              path="/sign-in"
+              element={<Login onAuthorization={handleAuthorization} />}
+            />
+            <Route
+              path={"/"}
+              element={
+                <ProtectedRoute
+                  element={Main}
+                  cards={cards}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  loggedIn={loggedIn}
+                />
+              }
+            />
           </Routes>
-          <Footer />
+          {loggedIn && <Footer />}
         </div>
 
         <EditProfilePopup
@@ -276,9 +279,9 @@ function App() {
         />
 
         <InfoTooltip
-            isOpen={isInfoTooltipOpen}
-            onClose={closeAllPopups}
-            success={isSuccessSignUp}
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          success={isSuccessSignUp}
         />
       </div>
     </CurrentUserContext.Provider>
